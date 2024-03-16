@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+    rel="stylesheet" />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            fontFamily: {
+              sans: ["Roboto", "sans-serif"],
+              body: ["Roboto", "sans-serif"],
+              mono: ["ui-monospace", "monospace"],
+            },
+          },
+          corePlugins: {
+            preflight: false,
+          },
+        };
+      </script>
+    <title>AsseblyAI Demo</title>
+  </head>
+  <body class="flex items-center justify-center h-screen">
+    <form
+      enctype="multipart/form-data"
+      action="/upload"
+      method="post"
+    >
+    <div class="mb-3">
+        <label
+          for="myFile"
+          class="mb-2 inline-block text-neutral-500 dark:text-neutral-400"
+          >Upload a video file</label
+        >
+        <input
+          class="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-surface transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:me-3 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-e file:border-solid file:border-inherit file:bg-transparent file:px-3  file:py-[0.32rem] file:text-surface focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none dark:border-white/70 dark:text-white  file:dark:text-white"
+          type="file"
+          id="myFile"
+          name="myFile"
+          accept="video/*"
+        />
+        <button
+        type="submit"
+        class="inline-block rounded bg-primary px-6 pb-2 pt-2.5 m-5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong">
+        Upload File and Start Processing
+        </button>
+      </div>
+    </form>
+  </body>
+</html>

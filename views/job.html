@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+    rel="stylesheet" />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            fontFamily: {
+              sans: ["Roboto", "sans-serif"],
+              body: ["Roboto", "sans-serif"],
+              mono: ["ui-monospace", "monospace"],
+            },
+          },
+          corePlugins: {
+            preflight: false,
+          },
+        };
+      </script>
+    <title>Video Playback</title>
+  </head>
+  <body class="flex flex-col items-center justify-center h-screen">
+    <span id="loading">Processing {{ .job.FilePath }} (Job {{ .job.Id }})</span>
+    <div id="video"></div>
+    <div id="language" class="m-5">
+        <select id="language-select" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="NONE" selected>Choose a language</option>
+            <option value="ES">Spanish</option>
+            <option value="FR">French</option>
+            <option value="DE">German</option>
+            <!-- Add more options as needed -->
+            </select>
+    </div>
+    <script>
+        document.getElementById('language').style.display = "none";
+        c= setInterval(() => {
+          fetch("/jobs/{{ .job.Id }}/status")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.status === "completed") {
+                    const { subtitles } = data;
+                    const { file_path } = data.job;
+
+                    const video = document.createElement("video");
+                    video.src = "/" + file_path;
+                    video.controls = true;
+                    video.autoplay = false;
+                    video.loop = true;
+                    video.width = 500;
+                    video.style = "border-radius: 10px;";
+
+                    let loading = document.getElementById("loading");
+                    document.body.removeChild(loading);
+                    document.getElementById("video").appendChild(video);
+                    
+                    createSubtitles(subtitles, "en");
+                    document.getElementById('language').style.display = "block";
+                    clearInterval(c);
+                }
+            });
+        }, 3000);
+
+        document.getElementById('language-select').addEventListener('change', function() {
+            const selectedLanguage = this.value;
+            if (selectedLanguage === "NONE") {
+                return;
+            }
+            document.querySelector('video').pause();
+
+            const notice = document.createElement("span");
+            notice.innerHTML = "Translating...";
+            document.getElementById("video").appendChild(notice);
+
+            const formData = new FormData();
+            formData.append('language', selectedLanguage);
+            formData.append('job_id', "{{ .job.Id }}");
+            fetch('/translate', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => createSubtitles(data.translations[0].text, selectedLanguage.toLowerCase()))
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        function createSubtitles(subtitles, srclang) {
+            const blob = new Blob([subtitles], { type: "text/vtt" });
+            const url = URL.createObjectURL(blob);
+
+            const video = document.querySelector('video');
+            for(let i = 0; i < video.textTracks.length; i++) {
+                video.textTracks[i].mode = "hidden";
+            }
+
+            const track = document.createElement("track");
+            track.src = url;
+            track.kind = "subtitles";
+            track.label = srclang;
+            track.srclang = srclang;
+            track.mode = "showing";
+            video.appendChild(track);
+
+            if(srclang === "en") {
+                return;
+            }
+            document.querySelector("#video span").remove();
+            alert("Translations added");
+        }
+    </script>
+</body>
+</html>
