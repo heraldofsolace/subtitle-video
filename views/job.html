@@ -29,7 +29,7 @@
     <title>Video Playback</title>
   </head>
   <body class="flex flex-col items-center justify-center h-screen">
-    <span id="loading">Processing {{ .job.FilePath }} (Job {{ .job.Id }})</span>
+    <span id="loading">Processing {{ .job.FilePath }} (Job {{ .job.ID }})</span>
     <div id="video"></div>
     <div id="language" class="m-5">
         <select id="language-select" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -43,7 +43,7 @@
     <script>
         document.getElementById('language').style.display = "none";
         c= setInterval(() => {
-          fetch("/jobs/{{ .job.Id }}/status")
+          fetch("/jobs/{{ .job.ID }}/status")
             .then((res) => res.json())
             .then((data) => {
                 if (data.status === "completed") {
@@ -82,7 +82,7 @@
 
             const formData = new FormData();
             formData.append('language', selectedLanguage);
-            formData.append('job_id', "{{ .job.Id }}");
+            formData.append('job_id', "{{ .job.ID }}");
             fetch('/translate', {
                 method: 'POST',
                 body: formData,
