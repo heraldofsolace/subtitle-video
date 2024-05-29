@@ -40,7 +40,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	aaiApiKey := os.Getenv("AAI_API_KEY")
+	aaiApiKey := os.Getenv("ASSEMBLYAI_API_KEY")
 
 	client := assemblyai.NewClient(aaiApiKey)
 
