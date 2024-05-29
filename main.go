@@ -18,7 +18,7 @@ import (
 
 // The Job definition
 type Job struct {
-	Id string `json:"id"`
+	ID string `json:"id"`
 	FilePath string `json:"file_path"`
 }
 
@@ -72,19 +72,19 @@ func main() {
 			return
 		}
 
-		id := *transcript.ID
-		job := Job{Id: id, FilePath: "uploads/" + file.Filename}
+		ID := *transcript.ID
+		job := Job{ID: ID, FilePath: "uploads/" + file.Filename}
 		jobs = append(jobs, job)
 
-		fmt.Printf("File %s uploaded successfully with ID %s\n", file.Filename, id)
-		c.Redirect(http.StatusMovedPermanently, "/jobs/" + id)
+		fmt.Printf("File %s uploaded successfully with ID %s\n", file.Filename, ID)
+		c.Redirect(http.StatusMovedPermanently, "/jobs/" + ID)
 	})
 	
 	r.GET("/jobs/:id", func(c *gin.Context) {
-		id := c.Param("id")
+		ID := c.Param("id")
 		var job Job
 		for _, j := range jobs {
-			if j.Id == id {
+			if j.ID == ID {
 				job = j
 			}
 		}
@@ -94,16 +94,16 @@ func main() {
 	})
 
 	r.GET("/jobs/:id/status", func(c *gin.Context) {
-		id := c.Param("id")
+		ID := c.Param("id")
 		var job Job
 		for _, j := range jobs {
-			if j.Id == id {
+			if j.ID == ID {
 				job = j
 			}
 		}
 
 		ctx := context.Background()
-		transcript, err := client.Transcripts.Get(ctx, id)
+		transcript, err := client.Transcripts.Get(ctx, ID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -115,7 +115,7 @@ func main() {
 				"job": job,
 			})
 		} else if transcript.Status == "completed" {
-			subtitles, err := client.Transcripts.GetSubtitles(ctx, id, "vtt", nil)
+			subtitles, err := client.Transcripts.GetSubtitles(ctx, ID, "vtt", nil)
 			if err != nil {
 				c.AbortWithError(http.StatusInternalServerError, err)
 				return
@@ -129,11 +129,11 @@ func main() {
 	})
 
 	r.POST("/translate", func(c *gin.Context) {
-		id := c.PostForm("job_id")
+		ID := c.PostForm("job_id")
 		language := c.PostForm("language")
 
 		ctx := context.Background()
-		subtitles, err := client.Transcripts.GetSubtitles(ctx, id, "vtt", nil)
+		subtitles, err := client.Transcripts.GetSubtitles(ctx, ID, "vtt", nil)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
